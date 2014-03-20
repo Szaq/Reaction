@@ -5,8 +5,7 @@ You may think of this library as of lightweight version of ReactiveCocoa, or any
 
 Say you have some manager object with a possibly long-running method. Let's call this manager AManager and the method aLongRunningMethod.
 
-```
-#!objective-c
+```objective-C
 
 - (NSArray *)aLongRunningMethod {
 }
@@ -14,8 +13,7 @@ Say you have some manager object with a possibly long-running method. Let's call
 ```
 and you want to take a value from it and use it in your UI. You may call it directly, but you know it may make your interface unresponsive, so you decide either on using GCD, or registering as delegate in AManager, or using NSNotificationCenter. It would be great if you could just get this value and be notified when it's ready. Let's try just that:
 
-```
-#!objective-c
+```objective-c
 //Somewhere in your UI code...
 [[self.aManager aLongRunningMethod] observe:^(NSArray *object){
   //do something with this value.
@@ -28,8 +26,7 @@ and you want to take a value from it and use it in your UI. You may call it dire
 Phef, that was easy. But certainly aLongRunningMethod's implementation must be complicated or contain some ugly voodoo macros. Let's check it:
 
 
-```
-#!objective-c
+```objective-c
 - (NSArray *)aLongRunningMethod {
   return [NSArray reactionWithBlock:^{
     //Some long running code returning our desired object
@@ -42,8 +39,7 @@ Phef, that was easy. But certainly aLongRunningMethod's implementation must be c
 Nothing simpler, than just returning block of code which will generate a return value.
 Well..it may be simpler. Suppose we had this array already cached:
  
-```
-#!objective-c
+```objective-c
 - (NSArray *)aLongRunningMethod {
   if ([self isArrayCached])
     return aCachedArray;
@@ -60,8 +56,7 @@ So when you already have needed value then there's no need to launch asynchronou
 
 Suppose you want to change the value somehow before returning it to observer. Just call process.
 
-```
-#!objective-c
+```objective-c
 
 [[[self.aManager aLongRunningMethod]
  processAsync^id(NSArray *object){
@@ -74,8 +69,7 @@ Suppose you want to change the value somehow before returning it to observer. Ju
 }];
 ```
 This way an observer gets an array filtered in the global asynchronous dispatch queue.
-```
-#!objective-c
+```objective-c
 
 [[[self.aManager aLongRunningMethod]
  processAsync^id(NSArray *object){
@@ -90,8 +84,7 @@ This way an observer gets an array filtered in the global asynchronous dispatch 
 
 Perhaps somewhere during processing error may occur. By creating OnError observer we can skip rest of observers but the first OnError.
 
-```
-#!objective-c
+```objective-c
 
 [[[[self.aManager aLongRunningMethod]
  processAsync^id(NSArray *object){
@@ -109,8 +102,7 @@ onError:^(NSError *error) {
 
 We may generate error in two places. Either in aLongRunningMethod and in process. We generate error by returning [NSObject error:]. For example in aLongRunningMethod:
 
-```
-#!objective-c
+```objective-c
 - (NSArray *)aLongRunningMethod {
   if ([self isArrayCached])
     return aCachedArray;
@@ -128,8 +120,7 @@ We may generate error in two places. Either in aLongRunningMethod and in process
 
 
 Often we don't need result of some asynchronous operation. Just knowledge that it is done. We may use then.
-```
-#!objective-c
+```objective-c
 
 [[[self.aManager aLongRunningMethod]
  processAsync^id(NSArray *object){
@@ -144,8 +135,7 @@ If our manager method doesn't return anything meaningful, then we may specify Vo
 
 We can observe directly on block or value.
 
-```
-#!objective-c
+```objective-c
 
 [[NSNumber reactionWithBlock:^id{ return @12; } observe ^(NSNumber *number){//Do something}];
 ```
@@ -153,8 +143,7 @@ We can observe directly on block or value.
 or even:
 
 
-```
-#!objective-c
+```objective-c
 
 [@12 observeAsync ^(NSNumber *number){//Do something}];
 ```
@@ -164,8 +153,7 @@ CocoaPods are being prepared. For now just Drag'n'Drop source folder into your p
 
 Then import headers.
 
-```
-#!objective-c
+```objective-c
 #import "NSObject+Reaction.h"
 #import "NSObject+ReactionObservation.h"
 ```
